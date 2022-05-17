@@ -2,11 +2,14 @@ const userService = require("../service/user.service");
 
 const signUp = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body
+        const { name, email, password } = req.body;
         const data = await userService.signUp(name, email, password);
-        res.cookie("refresh_token", data.refreshToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie("refresh_token", data.refreshToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
 
-        return res.json(data);
+        res.json({
+            success: true,
+            data
+        });
     } catch (e) {
         next(e);
     }
@@ -14,7 +17,13 @@ const signUp = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-
+        const { email, password } = req.body;
+        const data = await userService.login(email, password);
+        res.cookie("refresh_token", data.refreshToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+        res.json({
+            success: true,
+            data
+        });
     } catch (e) {
         next(e);
     }

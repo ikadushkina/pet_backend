@@ -19,11 +19,22 @@ const signUp = async (name, email, password) => {
         ...tokens,
         user: userDto
     }
-
 }
 
-const login = async () => {
+const login = async (email, password) => {
+    const user = await UserModel.findOne({ email });
+    if (!user) throw ApiError.BadRequest("Invalid email or password");
+    const isPasswordEquals = await bcrypt.compare(password, user.password);
+    if (!isPasswordEquals) throw ApiError.BadRequest("Invalid email or password");
 
+    const userDto = new UserDTO(user);
+    const tokens = tokenService.generateToken({ ...userDto })
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return {
+        ...tokens,
+        user: userDto
+    }
 }
 
 const logout = async () => {
