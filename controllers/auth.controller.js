@@ -6,7 +6,10 @@ const signUp = async (req, res, next) => {
         const data = await userService.signUp(name, email, password);
         res.cookie("refresh_token", data.refreshToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
 
-        return res.json(data);
+        res.json({
+            success: true,
+            data
+        });
     } catch (e) {
         next(e);
     }
@@ -17,7 +20,10 @@ const login = async (req, res, next) => {
         const { email, password } = req.body;
         const data = await userService.login(email, password);
         res.cookie("refresh_token", data.refreshToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-        return res.json(data);
+        res.json({
+            success: true,
+            data
+        });
     } catch (e) {
         next(e);
     }

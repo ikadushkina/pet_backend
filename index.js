@@ -5,9 +5,9 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const router = require("./routers");
 const errorMiddleware = require("./middleware/error.middleware");
+const { PORT } = require("./helper/config");
 
 const app = express();
-const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -25,6 +25,7 @@ const runServer = async () => {
         app.listen(PORT, () => console.log(`Server run. Port = ${PORT}`));
     } catch (e) {
         console.log(e);
+        // process.exit(1);
     }
 };
 
