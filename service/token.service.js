@@ -22,7 +22,12 @@ const saveToken = async (userId, refreshToken) => {
     return TokenModel.create({ user: userId, refreshToken });
 }
 
+const removeToken = async refreshToken => {
+    return TokenModel.deleteOne({ refreshToken });
+}
+
 module.exports = {
     generateToken,
-    saveToken
+    saveToken,
+    removeToken
 }
