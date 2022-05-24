@@ -16,7 +16,6 @@ const signUp = async (first_name, last_name, phone_number, email, password) => {
         phone_number,
         email,
         password: hashPass,
-        rating: 0,
     });
     const userDto = new UserDTO(user);
     const tokens = tokenService.generateToken({ ...userDto })

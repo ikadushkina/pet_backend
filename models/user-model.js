@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     phone_number: { type: String, required: true },
-    rating: { type: Number, required: true },
+    rating: { type: Number, required: true, default: 0 },
 },  {
     timestamps: {
         createdAt: "registered_at",
