@@ -22,7 +22,22 @@ const saveToken = async (userId, refreshToken) => {
     return TokenModel.create({ user: userId, refreshToken });
 }
 
+const removeToken = async refreshToken => {
+    return TokenModel.deleteOne({ refreshToken });
+}
+
+const setCookieToken = (res, token) => {
+    res.cookie("refresh_token", token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: "lax" });
+}
+
+const clearCookieToken = res => {
+    res.clearCookie("refresh_token").json({ success: true, data: null });
+}
+
 module.exports = {
     generateToken,
-    saveToken
+    saveToken,
+    removeToken,
+    setCookieToken,
+    clearCookieToken
 }

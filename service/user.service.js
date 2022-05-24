@@ -37,8 +37,8 @@ const login = async (email, password) => {
     }
 }
 
-const logout = async () => {
-
+const logout = async refreshToken => {
+    return tokenService.removeToken(refreshToken);
 }
 
 const getAllUsers = async () => {
