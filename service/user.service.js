@@ -58,8 +58,8 @@ const getUser = async (email) => {
 }
 
 const updateUser = async ({ id, first_name, last_name, phone_number, email }) => {
-    await UserModel.updateOne({ _id: id }, { first_name, last_name, phone_number, email });
-    const user =  await UserModel.findOne({ _id: id });
+    await UserModel.updateOne({ id }, { first_name, last_name, phone_number, email });
+    const user = await UserModel.findOne({ id });
     return new UserDTO(user);
 }
 
