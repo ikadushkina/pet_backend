@@ -9,6 +9,33 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+const getUser = async (req, res, next) => {
+    try {
+        const { email } = req.query;
+        const data = await service.getUser(email);
+        res.json({
+            success: true,
+            data
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
+const updateUser = async (req, res, next) => {
+    try {
+        const data = await service.updateUser(req.body);
+        res.json({
+            success: true,
+            data
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 module.exports = {
     getAllUsers,
+    getUser,
+    updateUser
 }

@@ -52,10 +52,22 @@ const getAllUsers = async () => {
     return users.map(user => new UserDTO(user));
 }
 
+const getUser = async (email) => {
+    const user = await UserModel.findOne({ email });
+    return new UserDTO(user);
+}
+
+const updateUser = async ({ id, first_name, last_name, phone_number, email }) => {
+    await UserModel.updateOne({ _id: id }, { first_name, last_name, phone_number, email });
+    const user =  await UserModel.findOne({ _id: id });
+    return new UserDTO(user);
+}
 
 module.exports = {
     signUp,
     login,
     logout,
-    getAllUsers
+    getAllUsers,
+    getUser,
+    updateUser
 }
