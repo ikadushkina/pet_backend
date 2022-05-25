@@ -4,14 +4,20 @@ const tokenService = require("../service/token.service");
 const UserDTO = require("../dto/user.dto");
 const ApiError = require("../helper/api.error");
 
-const signUp = async (name, email, password) => {
-    const candidate = await UserModel.findOne({ email });
+const signUp = async (first_name, last_name, phone_number, email, password) => {
+    const candidate = await UserModel.findOne({ email }, { _id: 1 });
 
     if (candidate) throw ApiError.BadRequest("User already exist");
 
-    const hashPass = bcrypt.hashSync(password, 10);
-    const user = await UserModel.create({ name, email, password: hashPass });
-    const userDto = new UserDTO(user);     // name, email, id
+    const hashPass = await bcrypt.hash(password, 10);
+    const user = await UserModel.create({
+        first_name,
+        last_name,
+        phone_number,
+        email,
+        password: hashPass,
+    });
+    const userDto = new UserDTO(user);
     const tokens = tokenService.generateToken({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
 

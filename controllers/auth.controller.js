@@ -3,8 +3,8 @@ const tokenService = require("../service/token.service");
 
 const signUp = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        const data = await userService.signUp(name, email, password);
+        const { first_name, last_name, phone_number, email, password } = req.body;
+        const data = await userService.signUp(first_name, last_name, phone_number, email, password);
         tokenService.setCookieToken(res, data.refreshToken);
         res.json({
             success: true,
