@@ -42,7 +42,14 @@ const logout = async (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
     try {
-        res.json("Test data");
+        const { refresh_token } = req.cookies;
+        const data = await userService.refresh(refresh_token);
+        tokenService.setCookieToken(res, data.refreshToken);
+
+        res.json({
+            success: true,
+            data
+        });
     } catch (e) {
         next(e);
     }

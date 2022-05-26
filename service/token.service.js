@@ -5,10 +5,13 @@ const { LIFE_TIME_ACCESS, LIFE_TIME_REFRESH } = require("../helper/config");
 const generateToken = payload => {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: LIFE_TIME_ACCESS });
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: LIFE_TIME_REFRESH });
+    const diff = Number(LIFE_TIME_ACCESS.replace(LIFE_TIME_ACCESS[LIFE_TIME_ACCESS.length - 1], ""));
+    const expires_at = new Date(new Date().getTime() + diff * 60000);
 
     return {
         accessToken,
-        refreshToken
+        refreshToken,
+        expires_at
     }
 }
 
@@ -26,6 +29,26 @@ const removeToken = async refreshToken => {
     return TokenModel.deleteOne({ refreshToken });
 }
 
+const validateAccessToken = token => {
+    try {
+        return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    } catch (e) {
+        return null;
+    }
+}
+
+const validateRefreshToken = token => {
+    try {
+        return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    } catch (e) {
+        return null;
+    }
+}
+
+const findToken = async (refreshToken) => {
+    return TokenModel.findOne({ refreshToken });
+}
+
 const setCookieToken = (res, token) => {
     res.cookie("refresh_token", token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: "lax" });
 }
@@ -39,5 +62,8 @@ module.exports = {
     saveToken,
     removeToken,
     setCookieToken,
-    clearCookieToken
+    clearCookieToken,
+    validateAccessToken,
+    validateRefreshToken,
+    findToken
 }
