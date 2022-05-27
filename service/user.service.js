@@ -47,15 +47,46 @@ const logout = async refreshToken => {
     return tokenService.removeToken(refreshToken);
 }
 
+const refresh = async refreshToken => {
+    if (!refreshToken) throw ApiError.UnauthorizedErrors();
+
+    const userData = tokenService.validateRefreshToken(refreshToken);
+    const tokenDB = await tokenService.findToken(refreshToken);
+
+    if (!userData || !tokenDB) throw ApiError.UnauthorizedErrors();
+
+    const user = await UserModel.findById(userData.id);
+    const userDto = new UserDTO(user);
+    const tokens = tokenService.generateToken({ ...userDto });
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+    return {
+        ...tokens,
+        user: userDto
+    }
+}
+
 const getAllUsers = async () => {
     const users = await UserModel.find({});
     return users.map(user => new UserDTO(user));
 }
 
+const getUser = async (email) => {
+    const user = await UserModel.findOne({ email });
+    return new UserDTO(user);
+}
+
+const updateUser = async ({ id, first_name, last_name, phone_number, email }) => {
+    await UserModel.updateOne({ id }, { $set: { first_name, last_name, phone_number, email }});
+    const user = await UserModel.findOne({ id });
+    return new UserDTO(user);
+}
 
 module.exports = {
     signUp,
     login,
     logout,
-    getAllUsers
+    getAllUsers,
+    getUser,
+    updateUser,
+    refresh
 }
