@@ -16,10 +16,16 @@ const getUser = async (req, res, next) => {
     try {
         const accessToken = req.headers.token;
         const userData = tokenService.validateAccessToken(accessToken);
-        const data = await service.getUser(userData.email);
-        res.json({
-            success: true,
-            data
+        const user = await service.getUser(userData.email);
+        fs.readFile(path.resolve(__dirname, "../uploads/avatars", `${user.id}.jpg`), "base64", (err, data) => {
+            const avatar = "data:image/png;base64," + data;
+            res.json({
+                success: true,
+                data: {
+                    ...user,
+                    avatar
+                }
+            });
         });
     } catch (e) {
         next(e);
@@ -43,7 +49,7 @@ const uploadAvatar = async (req, res, next) => {
         const user = req.query.user_id;
         await service.updateUser({id: user, avatar: `${user}.jpg`});
         const data = req.body.image.replace("data:image/png;base64,", "");
-        await fs.writeFileSync(path.resolve(__dirname, "../uploads/avatars", `${user}.jpg`), data, "base64");
+        await fs.writeFile(path.resolve(__dirname, "../uploads/avatars", `${user}.jpg`), data, "base64", () => {});
         res.json({
             success: true,
             data

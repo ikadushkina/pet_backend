@@ -3,8 +3,6 @@ const bcrypt = require("bcrypt");
 const tokenService = require("../service/token.service");
 const UserDTO = require("../dto/user.dto");
 const ApiError = require("../helper/api.error");
-const fs = require("fs");
-const path = require("path");
 
 const signUp = async (first_name, last_name, phone_number, email, password) => {
     const candidate = await UserModel.findOne({ email }, { _id: 1 });
@@ -74,13 +72,7 @@ const getAllUsers = async () => {
 
 const getUser = async (email) => {
     const user = await UserModel.findOne({ email });
-    const userData = new UserDTO(user);
-    const file = await fs.readFileSync(path.resolve(__dirname, "../uploads/avatars", user.avatar));
-    const avatar = "data:image/png;base64," + file.toString("base64");
-    return {
-        ...userData,
-        avatar
-    };
+    return new UserDTO(user);
 }
 
 const updateUser = async ({ id, first_name, last_name, phone_number, email, avatar }) => {
