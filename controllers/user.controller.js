@@ -1,4 +1,7 @@
 const service = require("../service/user.service");
+const tokenService = require("../service/token.service");
+const fs = require("fs");
+const path = require("path");
 
 const getAllUsers = async (req, res) => {
     try {
@@ -11,8 +14,9 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res, next) => {
     try {
-        const { email } = req.query;
-        const data = await service.getUser(email);
+        const accessToken = req.headers.token;
+        const userData = tokenService.validateAccessToken(accessToken);
+        const data = await service.getUser(userData.email);
         res.json({
             success: true,
             data
@@ -34,8 +38,24 @@ const updateUser = async (req, res, next) => {
     }
 };
 
+const uploadAvatar = async (req, res, next) => {
+    try {
+        const user = req.query.user_id;
+        await service.updateUser({id: user, avatar: `${user}.jpg`});
+        const data = req.body.image.replace("data:image/png;base64,", "");
+        await fs.writeFileSync(path.resolve(__dirname, "../uploads/avatars", `${user}.jpg`), data, "base64");
+        res.json({
+            success: true,
+            data
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUser,
-    updateUser
+    updateUser,
+    uploadAvatar
 }
